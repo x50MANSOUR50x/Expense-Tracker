@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Edit Transaction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>Edit Transaction</h1>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <div class="form-section">
+
+        <form method="POST">
+
+            <select name="type" required>
+                <option value="expense" {% if transaction["type"]=="expense" %}selected{% endif %}>
+                    Expense
+                </option>
+
+                <option value="income" {% if transaction["type"]=="income" %}selected{% endif %}>
+                    Income
+                </option>
+            </select>
+
+            <select name="category" required>
+
+                <option value="Food" {% if transaction["category"]=="Food" %}selected{% endif %}>
+                    Food
+                </option>
+
+                <option value="Transport" {% if transaction["category"]=="Transport" %}selected{% endif %}>
+                    Transport
+                </option>
+
+                <option value="Shopping" {% if transaction["category"]=="Shopping" %}selected{% endif %}>
+                    Shopping
+                </option>
+
+                <option value="Bills" {% if transaction["category"]=="Bills" %}selected{% endif %}>
+                    Bills
+                </option>
+
+                <option value="Entertainment" {% if transaction["category"]=="Entertainment" %}selected{% endif %}>
+                    Entertainment
+                </option>
+
+                <option value="Health" {% if transaction["category"]=="Health" %}selected{% endif %}>
+                    Health
+                </option>
+
+                <option value="Education" {% if transaction["category"]=="Education" %}selected{% endif %}>
+                    Education
+                </option>
+
+                <option value="Salary" {% if transaction["category"]=="Salary" %}selected{% endif %}>
+                    Salary
+                </option>
+
+                <option value="Other" {% if transaction["category"]=="Other" %}selected{% endif %}>
+                    Other
+                </option>
+
+            </select>
+
+            <input type="number" name="amount" step="0.01" min="0.01" value="{{ transaction['amount'] }}" required>
+
+            <input type="text" name="description" value="{{ transaction['description'] }}" placeholder="Description">
+
+            <input type="date" name="date" value="{{ transaction['date'] }}" required>
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+
+        <br>
+
+        <a href="/">Back to Dashboard</a>
+
+    </div>
+
+</body>
+
+</html>

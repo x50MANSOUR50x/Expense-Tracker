@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>Expense Tracker</h1>
+
+
+    <h2>Summary</h2>
+
+    <div class="summary">
+
+        <div class="card">
+            <h3>Total Income</h3>
+            <p>{{ total_income }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Expenses</h3>
+            <p>{{ total_expenses }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Balance</h3>
+            <p>{{ balance }}</p>
+        </div>
+
+    </div>
+
+    <h2>Add Transaction</h2>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+
+        <input type="hidden" name="action" value="add">
+
+        <select name="type">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+        </select>
+
+        <select name="category" required>
+            <option value="">Choose a category</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills">Bills</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Education">Education</option>
+            <option value="Salary">Salary</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <input type="number" name="amount" step="0.01" min="0.01" placeholder="Amount" required>
+
+        <input type="text" name="description" placeholder="Description">
+
+        <input type="date" name="date" required>
+
+        <button type="submit">Add Transaction</button>
+
+    </form>
+
+    <h3>Filter</h3>
+
+    <a href="/?type=all">All</a>
+    <a href="/?type=income">Income</a>
+    <a href="/?type=expense">Expenses</a>
+
+    <h2>Spending by Category</h2>
+
+    {% for category in category_totals %}
+
+    <p>
+        {{ category["category"] }}:
+        {{ category["total"] }}
+    </p>
+
+    {% else %}
+
+    <p>No expenses yet.</p>
+
+    {% endfor %}
+
+    <h2>Spending by Category</h2>
+
+    <div id="category-data">
+
+        {% for category in category_totals %}
+        <div class="category-data" data-category="{{ category['category'] }}" data-total="{{ category['total'] }}">
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <canvas id="expenseChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const dataElements = document.querySelectorAll(".category-data");
+
+        const categories = [];
+        const amounts = [];
+
+        dataElements.forEach(element => {
+            categories.push(element.dataset.category);
+            amounts.push(Number(element.dataset.total));
+        });
+
+        const ctx = document.getElementById("expenseChart");
+
+        new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: categories,
+                datasets: [{
+                    data: amounts
+                }]
+            }
+        });
+    </script>
+
+    <h2>Transactions</h2>
+
+
+    {% for transaction in transactions %}
+
+    <div class="transaction">
+
+        <div>
+            <strong>{{ transaction["category"] }}</strong>
+            <p>{{ transaction["description"] }}</p>
+        </div>
+
+        <div>
+            <strong>{{ transaction["amount"] }}</strong>
+            <p>{{ transaction["type"] }} - {{ transaction["date"] }}</p>
+        </div>
+
+        <div>
+            <a href="/edit/{{ transaction['id'] }}">Edit</a>
+
+            <form method="POST" style="display: inline;">
+
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="{{ transaction['id'] }}">
+
+                <button type="submit">Delete</button>
+
+            </form>
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <p>No transactions yet.</p>
+
+    {% endfor %}
+
+</body>
+
+</html>
